@@ -12,6 +12,7 @@ import {
 } from '../../actions';
 import { err } from '../../constants';
 import { Header } from '../Common';
+import './index.css';
 
 class CredentialsPage extends Component {
 	static propTypes = {
@@ -196,6 +197,7 @@ class CredentialsPage extends Component {
 	}
 }
 
-export default connect(null, { flash: sendFlashMessage, clear: clearFlashMessages })(
-	CredentialsPage
-);
+export default connect(
+	null,
+	{ flash: sendFlashMessage, clear: clearFlashMessages }
+)(CredentialsPage);

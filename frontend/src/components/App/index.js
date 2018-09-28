@@ -31,6 +31,7 @@ import SignUp from '../Signup';
 import ForgotPassword from '../ForgotPassword';
 import ResetPassword from '../ResetPassword';
 import { storageChanged, clearFlashMessages, fetchProfile } from '../../actions';
+import './index.css';
 
 fontawesome.library.add(faFacebook, faGithub, faTwitter, faEnvelope, faCalendar, faCoffee, faHeart);
 

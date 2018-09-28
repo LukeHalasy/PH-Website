@@ -1,0 +1,30 @@
+#permission_intro_text {
+	text-align: center;
+	padding: 10px;
+}
+
+#permission_name {
+	color: #000000;
+	font-size: 32px;
+}
+
+#permission_description {
+	font-size: 1.1em;
+	margin-top: 8px;
+	color: #444444;
+}
+
+#users_lists {
+	margin-top: 20px;
+}
+
+.users_list {
+	display: inline-block;
+	font-size: 20px;
+	padding: 0px 10px;
+}
+
+.user {
+	color: #eeda69;
+	margin-bottom: 6px;
+}

@@ -1,5 +1,11 @@
 import React from 'react';
 
+import SponsorSection from './sections/SponsorSection';
+import FaqSection from './sections/FaqSection';
+import './index.css';
+import '../Common/AboutSection.css';
+import '../Common/EventSection.css';
+
 export default () => (
 	<React.Fragment>
 		<div className="section about">
@@ -16,7 +22,7 @@ export default () => (
 			</div>
 		</div>
 
-		<div className="section events">
+		<div className="section events" style={{ textAlign: 'left' }}>
 			<div className="section-container">
 				<h1>What We Do</h1>
 				<div className="content left">
@@ -40,62 +46,7 @@ export default () => (
 				<div className="event-img" />
 			</div>
 		</div>
-
-		<div className="section faq">
-			<div className="section-container">
-				<h1>FAQ</h1>
-				<div className="faq-img" />
-				<div className="content right">
-					<h3>What is hacking?</h3>
-					<p>
-						You&#39;re probably thinking of movies where hackers steal secrets from the FBI.
-						That&#39;s not what we&#39;re about. To us, hacking means using cutting edge
-						technology to create kick-ass projects.
-					</p>
-					<h3>
-						I missed the callout!
-						<br />
-						Can I still join?
-					</h3>
-					<p>
-						Absolutely! You can find all of our events in the Purdue Hackers
-						<a
-							href="https://www.facebook.com/groups/purduehackers/"
-							rel="noopener noreferrer"
-							target="_blank"
-						>
-							facebook group
-						</a>
-						. No prior knowledge or experience is needed, so come say hi!
-					</p>
-					<h3>What if I can&#39;t code?</h3>
-					<p>
-						No problem! As long as you&#39;re passionate about how technology can shape the
-						future, you&#39;ll fit right in. We offer lots of events to help teach coding
-						skills, including a semester-long coding bootcamp called Ignite.
-					</p>
-					<h3>What&#39;s up with the logo?</h3>
-					<p>
-						It&#39;s a glider from Conway&#39;s Game of Life. It&#39;s a universal symbol for
-						hacking and was chosen because it&#39;s the only pattern in the game that can
-						spread life to new areas.
-					</p>
-				</div>
-			</div>
-		</div>
-
-		<div className="section sponsors">
-			<div className="section-container">
-				<h1>What's Up?</h1>
-				<h3>
-					Get instant access to some of the brightest minds and technical bad asses that
-					inhabit the midwest.
-				</h3>
-				<div className="sponsor-img" />
-				<a href="mailto:purduehackers@gmail.com">
-					<button className="buttn sponsor-contact">Get In Touch!</button>
-				</a>
-			</div>
-		</div>
+		<FaqSection />
+		<SponsorSection />
 	</React.Fragment>
 );

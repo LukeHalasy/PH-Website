@@ -12,6 +12,7 @@ import {
 	removeUserFromPermission
 } from '../../actions';
 import { CustomRedirect, Header } from '../Common';
+import './index.css';
 
 class PermissionPage extends Component {
 	static propTypes = {
@@ -130,12 +131,12 @@ class PermissionPage extends Component {
 					</h3>
 					<div className="panel panel-default text-left">
 						<div className="panel-body">
-							<div id="profile_intro_text">
-								<div id="profile_name">{permission.name}</div>
-								<div id="profile_major">{permission.description}</div>
-								<div id="profile_badges">
-									<div className="profile_badge">
-										<div className="profile_badge_title">Users</div>
+							<div id="permission_intro_text">
+								<div id="permission_name">{permission.name}</div>
+								<div id="permission_description">{permission.description}</div>
+								<div id="users_lists">
+									<div className="users_list">
+										<div className="users">Users</div>
 										{members ? members.length : 0}
 									</div>
 								</div>
@@ -222,6 +223,7 @@ const mapStateToProps = state => ({
 	...state.sessionState
 });
 
-export default connect(mapStateToProps, { flash: sendFlashMessage, clear: clearFlashMessages })(
-	PermissionPage
-);
+export default connect(
+	mapStateToProps,
+	{ flash: sendFlashMessage, clear: clearFlashMessages }
+)(PermissionPage);

@@ -1,0 +1,10 @@
+#location_name {
+	color: #000000;
+	font-size: 32px;
+}
+
+#location_city {
+	font-size: 1.1em;
+	margin-top: 8px;
+	color: #444444;
+}

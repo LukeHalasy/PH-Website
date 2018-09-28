@@ -31,7 +31,7 @@ export const isAdmin = user => hasPermission(user, 'admin');
 export const memberMatches = (user, id) =>
 	user && (hasPermission(user, 'admin') || user._id === id);
 
-export const shortName = name => name.substr(0, 32);
+export const shortName = name => name.substr(0, 32) + '...';
 
 const storage = () => (localStorage.getItem('token') ? localStorage : sessionStorage);
 let _storage = storage();

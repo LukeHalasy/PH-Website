@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { hasPermission, formatDate, shortName, err } from '../../constants';
 import { sendFlashMessage, clearFlashMessages, fetchEvent } from '../../actions';
 import { MembersAttendedTable, CustomRedirect, Header } from '../Common';
-
+import './index.css';
 // TODO: Add autocomplete to input tags
 
 class EventPage extends Component {
@@ -112,10 +112,10 @@ class EventPage extends Component {
 						</h3>
 						<div className="panel panel-default text-left">
 							<div className="panel-body">
-								<div id="profile_intro_text">
-									<div id="profile_name">{event.name}</div>
-									<div id="profile_email">Location: {event.location}</div>
-									<div id="profile_major">{formatDate(event.eventTime)}</div>
+								<div id="event_intro_text">
+									<div id="event_name">{event.name}</div>
+									<div id="event_location">Location: {event.location}</div>
+									<div id="facebook_link">{formatDate(event.eventTime)}</div>
 									{event.facebook && (
 										<a href={event.facebook}>
 											{event.facebook}

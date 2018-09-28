@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './ProfilePanel.css';
 
 const ProfilePanel = ({ member, events, jobs }) => (
 	<React.Fragment>

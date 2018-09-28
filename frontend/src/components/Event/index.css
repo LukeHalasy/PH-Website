@@ -1,0 +1,23 @@
+#event_intro_text {
+	text-align: center;
+	padding: 10px;
+}
+
+#event_name {
+	color: #000000;
+	font-size: 32px;
+}
+
+#event_location {
+	display: block;
+	font-size: 14px;
+	margin-top: -4px;
+	color: #444444;
+	text-decoration: none;
+}
+
+#facebook_link {
+	font-size: 1.1em;
+	margin-top: 8px;
+	color: #444444;
+}

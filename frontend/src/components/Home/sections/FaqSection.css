@@ -1,0 +1,25 @@
+.faq {
+	text-align: left;
+}
+
+.faq h1 {
+	margin-left: 55%;
+}
+
+.right {
+	width: 45%;
+	margin-left: 10%;
+}
+
+.faq-img {
+	clear: none;
+	float: left;
+	margin-top: 1em;
+	background: url('../../../assets/images/PH/bell_tower.svg') no-repeat center;
+	background-clip: padding-box;
+	background-size: 120% 120%;
+	height: 600px;
+	max-height: 600px;
+	width: 45%;
+	border-radius: 100em;
+}

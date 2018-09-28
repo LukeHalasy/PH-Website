@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { formatDate, hasPermission } from '../../constants';
+import './MemberTable.css';
 
 export default class extends Component {
 	static propTypes = {

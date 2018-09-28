@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import routes, { hasPermission } from '../../constants';
 
+import './Navbar.css';
+
 const CommonNav = () => (
 	<React.Fragment>
 		<NavItem href={routes.MEMBERS}>Members</NavItem>

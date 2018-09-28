@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import routes, { hasPermission, formatDate, err } from '../../constants';
 import { sendFlashMessage, clearFlashMessages, fetchLocation, updateLocation } from '../../actions';
 import { CustomRedirect, Header } from '../Common';
-
+import './index.css';
 // TODO: Add autocomplete to input tags
 
 class LocationPage extends Component {
@@ -138,8 +138,8 @@ class LocationPage extends Component {
 								</form>
 							) : (
 								<div className="panel-body">
-									<div id="profile_name">{location.name}</div>
-									<div id="profile_major">City: {location.city}</div>
+									<div id="location_name">{location.name}</div>
+									<div id="location_city">City: {location.city}</div>
 								</div>
 							)}
 						</div>
@@ -186,6 +186,7 @@ const mapStateToProps = state => ({
 	...state.sessionState
 });
 
-export default connect(mapStateToProps, { flash: sendFlashMessage, clear: clearFlashMessages })(
-	LocationPage
-);
+export default connect(
+	mapStateToProps,
+	{ flash: sendFlashMessage, clear: clearFlashMessages }
+)(LocationPage);

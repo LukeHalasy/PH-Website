@@ -1,5 +1,14 @@
+/*Referenced in
+
+components/App/index.js
+
+also change the route
+*/
+
 import React from 'react';
 import { Header } from '../Common';
+import '../Common/AboutSection.css';
+import '../Common/EventSection.css';
 
 export default () => (
 	<React.Fragment>
@@ -15,7 +24,7 @@ export default () => (
 			</div>
 		</div>
 
-		<div className="section events">
+		<div className="section events" style={{ textAlign: 'left' }}>
 			<div className="section-container">
 				<h1>What We Do</h1>
 				<div className="content left">
