@@ -32,9 +32,9 @@ export const memberMatches = (user, id) =>
 	user && (hasPermission(user, 'admin') || user._id === id);
 
 export const shortName = name => {
-	if (name.charAt(31) != ' ' && name.charAt(32) != ' ') {
+	if (name.charAt(31) !== ' ' && name.charAt(32) !== ' ') {
 		for (var i = 31; i > 0; i--) {
-			if (name.charAt(i) == ' ') {
+			if (name.charAt(i) === ' ') {
 				return name.substring(0, i) + '...';
 			}
 		}
