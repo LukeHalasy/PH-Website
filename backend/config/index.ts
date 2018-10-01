@@ -14,6 +14,7 @@ const config = {
 	EXPIRES_IN: env.EXPIRES_IN || 10000,
 	NODE_ENV: env.NODE_ENV || 'development',
 	CREDENTIAL_SECRET: env.CREDENTIAL_SECRET || 'CredentialSecret',
+	FACEBOOK_ACCESS_TOKEN: env.FACEBOOK_ACCESS_TOKEN || '',
 	ORG_NAME: env.ORG_NAME || 'Purdue Hackers',
 	EMAIL: env.EMAIL || 'your@email.com',
 	EMAIL_PASSWORD: env.EMAIL_PASSWORD || 'SuperSecretPassword',

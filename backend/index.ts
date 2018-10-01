@@ -6,6 +6,7 @@ import * as logger from 'morgan';
 import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as cors from 'cors';
+import * as cron from 'node-cron';
 import { join, resolve } from 'path';
 import CONFIG from './config';
 import passportMiddleWare, { user } from './middleware/passport';
@@ -18,6 +19,8 @@ import { router as locations } from './routes/locations';
 import { router as credentials } from './routes/credentials';
 import { router as permissions } from './routes/permissions';
 import { router as autocomplete } from './routes/autocomplete';
+
+import { syncFacebookEvents } from './utils/syncFacebookEvents';
 
 export const app = express();
 export const server = http.createServer(app);
@@ -92,3 +95,8 @@ server.listen(
 	() => console.log('CONFIG:', CONFIG, `\nListening on port: ${PORT}`)
 	// console.log(`Listening on port: ${PORT}`)
 );
+
+//will sync facebook events every 30 minutes from 6am to 11pm
+cron.schedule('*/30 6-23 * * *', () => {
+	syncFacebookEvents();
+});
