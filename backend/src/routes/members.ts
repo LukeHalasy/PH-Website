@@ -1,11 +1,10 @@
 import * as express from 'express';
 // import * as paginate from 'express-paginate';
 import { ObjectId } from 'mongodb';
-import * as Multer from 'multer';
 import { isEmail, isMobilePhone, isURL } from 'validator';
 import { compareSync } from 'bcrypt';
 import { Member } from '../models/member';
-import { IEventModel, Event } from '../models/event';
+import { Event, IEventModel } from '../models/event';
 import { Location } from '../models/location';
 import { Permission } from '../models/permission';
 import { Job } from '../models/job';
@@ -15,7 +14,8 @@ import {
 	errorRes,
 	memberMatches,
 	uploadToStorage,
-	multer
+	multer,
+	addMemberToPermissions
 } from '../utils';
 
 export const router = express.Router();
@@ -64,9 +64,8 @@ export const router = express.Router();
 // 	}
 // });
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
 	try {
-		console.log(req.protocol + '://' + req.get('host'));
 		// tslint:disable-next-line:triple-equals
 		const order = req.query.order == '1' ? 1 : -1;
 		let sortBy = req.query.sortBy || 'createdAt';
@@ -104,14 +103,15 @@ router.get('/:id', async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
 			return errorRes(res, 400, 'Invalid member ID');
-		const user = await Member.findById(new ObjectId(req.params.id))
+		const member = await Member.findById(req.params.id)
 			.populate({
 				path: 'permissions',
 				model: Permission
 			})
 			.lean()
 			.exec();
-		return successRes(res, user);
+		if (!member) return errorRes(res, 400, 'Member does not exist');
+		return successRes(res, member);
 	} catch (error) {
 		return errorRes(res, 500, error);
 	}
@@ -127,6 +127,7 @@ router.put('/:id', auth(), multer.any(), async (req, res) => {
 				401,
 				'You are unauthorized to edit this profile'
 			);
+
 		const files: Express.Multer.File[] = req.files
 			? (req.files as Express.Multer.File[])
 			: new Array<Express.Multer.File>();
@@ -234,6 +235,40 @@ router.put('/:id', auth(), multer.any(), async (req, res) => {
 		return errorRes(res, 500, error.message);
 	}
 });
+
+router.post(
+	'/organizer',
+	auth(),
+	hasPermissions(['permissions']),
+	async (req, res) => {
+		try {
+			const { email } = req.body;
+			if (!email)
+				return errorRes(res, 400, 'Please enter member name or email');
+			const permissions = await Permission.find()
+				.where('organizer')
+				.ne(0)
+				.exec();
+
+			const member = await Member.findOne({
+				$or: [{ name: email }, { email }]
+			}).exec();
+
+			if (!member) return errorRes(res, 400, 'Member not found');
+
+			const [m, p] = await addMemberToPermissions(
+				member,
+				permissions,
+				req.user
+			);
+
+			return successRes(res, { member: m, permissions: p });
+		} catch (error) {
+			console.error(error);
+			return errorRes(res, 500, error);
+		}
+	}
+);
 
 router.delete('/:id', auth(), hasPermissions(['admin']), async (req, res) => {
 	try {

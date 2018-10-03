@@ -3,14 +3,16 @@ import { ObjectId } from 'mongodb';
 import * as GoogleCloudStorage from '@google-cloud/storage';
 import * as Multer from 'multer';
 import { IMemberModel, Member } from '../models/member';
+import { Permission, IPermissionModel } from '../models/permission';
+import CONFIG from '../config';
 export * from './email';
 
-const storage = GoogleCloudStorage({
+const storage = new GoogleCloudStorage({
 	projectId: 'purduehackers-212319',
 	keyFilename: 'purduehackers.json'
 });
 
-const bucket = storage.bucket('purduehackers');
+const bucket = storage.bucket(CONFIG.GC_BUCKET);
 
 export const multer = Multer({
 	storage: Multer.memoryStorage(),
@@ -31,14 +33,15 @@ export const errorRes = (res: Response, status: number, error: any) =>
 // export const hasPermission = (user: IMemberModel, name: string) =>
 // 	user.permissions.some(per => per.name === name || per.name === 'admin');
 
-export const hasPermission = (user: Express.User, name: string): boolean =>
+export const hasPermission = (user, name: string): boolean =>
 	user &&
+	user.permissions &&
 	// (Object.keys(user).length !== 0 && user.constructor === Object) &&
 	user.permissions.some(per => per.name === name || per.name === 'admin');
 
-export const isAdmin = (user: Express.User) => hasPermission(user, 'admin');
+export const isAdmin = user => hasPermission(user, 'admin');
 
-export const memberMatches = (user: Express.User, id: ObjectId | string) =>
+export const memberMatches = (user, id: ObjectId | string) =>
 	user &&
 	(hasPermission(user, 'admin') ||
 		user._id === id ||
@@ -111,9 +114,59 @@ export const uploadToStorage = async (
 
 		blobStream.on('finish', () => {
 			// The public URL can be used to directly access the file via HTTP.
-			resolve(`https://storage.googleapis.com/purduehackers/${fileName}`);
+			resolve(`https://storage.googleapis.com/${CONFIG.GC_BUCKET}/${fileName}`);
 		});
 
 		blobStream.end(file.buffer);
 	});
+};
+
+export const addMemberToPermission = async (member, permission, user) =>
+	Promise.all([
+		Member.findByIdAndUpdate(
+			member._id,
+			{
+				$push: {
+					permissions: permission._id
+				}
+			},
+			{ new: true }
+		).exec(),
+		Permission.findByIdAndUpdate(
+			permission._id,
+			{
+				$push: {
+					members: {
+						member: member._id,
+						recordedBy: user._id,
+						dateAdded: new Date()
+					}
+				}
+			},
+			{ new: true }
+		)
+			.populate({
+				path: 'members.member',
+				model: Member
+			})
+			.populate({
+				path: 'members.recordedBy',
+				model: Member
+			})
+			.exec()
+	]);
+
+export const addMemberToPermissions = async (
+	member: IMemberModel,
+	permissions: IPermissionModel[],
+	user
+) => {
+	let p;
+	const perms = [];
+	for (const permission of permissions) {
+		[member, p] = await addMemberToPermission(member, permission, user);
+		perms.push(p);
+	}
+
+	return [member, perms];
 };

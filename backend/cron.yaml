@@ -1,0 +1,4 @@
+cron:
+- description: "sync facebook events"
+  url: /api/tasks/facebook
+  schedule: every 30 mins from 06:00 to 23:00
