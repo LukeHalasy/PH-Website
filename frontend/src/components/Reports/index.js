@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { MemberTable, Header } from '../Common';
 import routes, { hasPermission } from '../../constants';
-import { fetchMembers } from '../../actions';
+import { fetchMembers, fetchMajors } from '../../actions';
 import { Bar } from 'react-chartjs-2';
 import '../Common/AboutSection.css';
 import '../Common/EventSection.css';
@@ -23,18 +23,22 @@ class ReportsPage extends Component {
 		super(props);
 		this.state = {
 			members: [],
+			majors: [],
 			loading: true
 		};
 	}
 
 	componentDidMount = async () => {
 		const { members } = await fetchMembers({});
+		const { majors } = await fetchMajors();
 		console.log('ReportsPage fetched members:', members);
-		this.setState({ members, loading: false });
+		console.log('ReportsPage fetched majors:', majors);
+		this.setState({ members, majors, loading: false });
 	};
 
 	getClassData = () => {
 		const gradeData = [0, 0, 0, 0];
+		console.log('Members2!: ', this.state.members.length);
 
 		for (var i = 0; i < this.state.members.length; i++) {
 			if (this.state.members[i].graduationYear) {
@@ -78,6 +82,47 @@ class ReportsPage extends Component {
 		return classData;
 	};
 
+	getMajorData = () => {
+		const majorDataDict = {
+			'Computer Science': 0,
+			'Computer Graphics Technology': 0,
+			'Computer Information Technology': 0,
+			'Electrical Computer Engineering': 0,
+			'Electrical Engineering': 0,
+			'First Year Engineering': 0,
+			Math: 0,
+			'Mechanical Engineering': 0,
+			Other: 0
+		};
+
+		console.log('------members----', this.state.majors);
+
+		for (var i = 0; i < this.state.majors.length; i++) {
+			if (this.state.majors[i]) {
+				majorDataDict[this.state.majors[i]] += 1;
+			}
+		}
+
+		console.log(majorDataDict);
+
+		const majorData = {
+			labels: Object.keys(majorDataDict),
+			datasets: [
+				{
+					label: 'Major Distribution',
+					backgroundColor: 'rgba(255,99,132,0.2)',
+					borderColor: 'rgba(255,99,132,1)',
+					borderWidth: 1,
+					hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+					hoverBorderColor: 'rgba(255,99,132,1)',
+					data: Object.values(majorDataDict)
+				}
+			]
+		};
+
+		return majorData;
+	};
+
 	render() {
 		const { members, loading } = this.state;
 		const { user } = this.props;
@@ -87,12 +132,13 @@ class ReportsPage extends Component {
 				<div className="section events" style={{ textAlign: 'left' }}>
 					<div className="section-container">
 						<Header message="Class Data" />
-						<Bar data={this.getClassData()} />
+						<Bar data={this.getClassData} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
 						<Header message="Reports" />
+						<Bar data={this.getMajorData} />
 					</div>
 				</div>
 			</div>

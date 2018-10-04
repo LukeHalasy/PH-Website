@@ -1,14 +1,14 @@
-import * as express from 'express';
+import * as express from "express";
 // import * as paginate from 'express-paginate';
-import { ObjectId } from 'mongodb';
-import { isEmail, isMobilePhone, isURL } from 'validator';
-import { compareSync } from 'bcrypt';
-import { Member } from '../models/member';
-import { Event, IEventModel } from '../models/event';
-import { Location } from '../models/location';
-import { Permission } from '../models/permission';
-import { Job } from '../models/job';
-import { auth, hasPermissions } from '../middleware/passport';
+import { ObjectId } from "mongodb";
+import { isEmail, isMobilePhone, isURL } from "validator";
+import { compareSync } from "bcrypt";
+import { Member } from "../models/member";
+import { Event, IEventModel } from "../models/event";
+import { Location } from "../models/location";
+import { Permission } from "../models/permission";
+import { Job } from "../models/job";
+import { auth, hasPermissions } from "../middleware/passport";
 import {
 	successRes,
 	errorRes,
@@ -16,7 +16,7 @@ import {
 	uploadToStorage,
 	multer,
 	addMemberToPermissions
-} from '../utils';
+} from "../utils";
 
 export const router = express.Router();
 
@@ -64,27 +64,27 @@ export const router = express.Router();
 // 	}
 // });
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
 	try {
 		// tslint:disable-next-line:triple-equals
-		const order = req.query.order == '1' ? 1 : -1;
-		let sortBy = req.query.sortBy || 'createdAt';
+		const order = req.query.order == "1" ? 1 : -1;
+		let sortBy = req.query.sortBy || "createdAt";
 		let contains = false;
 		Member.schema.eachPath(path => {
 			if (path.toLowerCase() === sortBy.toLowerCase()) contains = true;
 		});
-		if (!contains) sortBy = 'createdAt';
+		if (!contains) sortBy = "createdAt";
 
 		const results = await Member.find(
 			{
 				privateProfile: { $ne: 1 },
 				graduationYear: { $gt: 0 }
 			},
-			'_id name graduationYear createdAt'
+			"_id name graduationYear createdAt"
 		)
 
 			.populate({
-				path: 'permissions',
+				path: "permissions",
 				model: Permission
 			})
 			.sort({ [sortBy]: order })
@@ -99,33 +99,52 @@ router.get('/', async (req, res) => {
 	}
 });
 
-router.get('/:id', async (req, res) => {
+router.get("/majors", async (req, res) => {
+	try {
+		const results = await Member.find(
+			{ major: { $ne: null } },
+			"major"
+		).exec();
+
+		var majors: String[] = new Array();
+		for (let result of results) {
+			majors.push(result.major);
+		}
+
+		return successRes(res, { majors });
+	} catch (error) {
+		console.error(error);
+		return errorRes(res, 500, error);
+	}
+});
+
+router.get("/:id", async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
-			return errorRes(res, 400, 'Invalid member ID');
+			return errorRes(res, 400, "Invalid member ID");
 		const member = await Member.findById(req.params.id)
 			.populate({
-				path: 'permissions',
+				path: "permissions",
 				model: Permission
 			})
 			.lean()
 			.exec();
-		if (!member) return errorRes(res, 400, 'Member does not exist');
+		if (!member) return errorRes(res, 400, "Member does not exist");
 		return successRes(res, member);
 	} catch (error) {
 		return errorRes(res, 500, error);
 	}
 });
 
-router.put('/:id', auth(), multer.any(), async (req, res) => {
+router.put("/:id", auth(), multer.any(), async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
-			return errorRes(res, 400, 'Invalid member ID');
+			return errorRes(res, 400, "Invalid member ID");
 		if (!memberMatches(req.user, req.params.id))
 			return errorRes(
 				res,
 				401,
-				'You are unauthorized to edit this profile'
+				"You are unauthorized to edit this profile"
 			);
 
 		const files: Express.Multer.File[] = req.files
@@ -154,61 +173,61 @@ router.put('/:id', auth(), multer.any(), async (req, res) => {
 			return errorRes(
 				res,
 				400,
-				'Please provide your first and last name'
+				"Please provide your first and last name"
 			);
-		if (!email) return errorRes(res, 400, 'Please provide your email');
-		if (!isEmail(email)) return errorRes(res, 400, 'Invalid email');
-		if (!password) return errorRes(res, 400, 'A password is required');
+		if (!email) return errorRes(res, 400, "Please provide your email");
+		if (!isEmail(email)) return errorRes(res, 400, "Invalid email");
+		if (!password) return errorRes(res, 400, "A password is required");
 		if (!passwordConfirm)
-			return errorRes(res, 400, 'Please confirm your password');
+			return errorRes(res, 400, "Please confirm your password");
 		if (!graduationYear || !parseInt(graduationYear, 10))
-			return errorRes(res, 400, 'Please provide a valid graduation year');
+			return errorRes(res, 400, "Please provide a valid graduation year");
 		if (
 			gender &&
-			gender !== 'Male' &&
-			gender !== 'Female' &&
-			gender !== 'Other' &&
-			gender !== 'No'
+			gender !== "Male" &&
+			gender !== "Female" &&
+			gender !== "Other" &&
+			gender !== "No"
 		)
-			return errorRes(res, 400, 'Please provide a valid gender');
+			return errorRes(res, 400, "Please provide a valid gender");
 		if (
 			major &&
-			major !== 'Computer Science' &&
-			major !== 'Computer Graphics Technology' &&
-			major !== 'Computer Information Technology' &&
-			major !== 'Electrical Computer Engineering' &&
-			major !== 'Electrical Engineering' &&
-			major !== 'First Year Engineering' &&
-			major !== 'Math' &&
-			major !== 'Mechanical Engineering' &&
-			major !== 'Other'
+			major !== "Computer Science" &&
+			major !== "Computer Graphics Technology" &&
+			major !== "Computer Information Technology" &&
+			major !== "Electrical Computer Engineering" &&
+			major !== "Electrical Engineering" &&
+			major !== "First Year Engineering" &&
+			major !== "Math" &&
+			major !== "Mechanical Engineering" &&
+			major !== "Other"
 		)
-			return errorRes(res, 400, 'Please provide a valid major');
-		if (phone && !isMobilePhone(phone, ['en-US'] as any))
-			return errorRes(res, 400, 'Invalid phone number: ' + phone);
+			return errorRes(res, 400, "Please provide a valid major");
+		if (phone && !isMobilePhone(phone, ["en-US"] as any))
+			return errorRes(res, 400, "Invalid phone number: " + phone);
 		if (password !== passwordConfirm)
-			return errorRes(res, 400, 'Passwords does not match');
+			return errorRes(res, 400, "Passwords does not match");
 		if (facebook && !/(facebook|fb)/.test(facebook))
-			return errorRes(res, 400, 'Invalid Facebook URL');
+			return errorRes(res, 400, "Invalid Facebook URL");
 		if (github && !/github/.test(github))
-			return errorRes(res, 400, 'Invalid GitHub URL');
+			return errorRes(res, 400, "Invalid GitHub URL");
 		if (linkedin && !/linkedin/.test(linkedin))
-			return errorRes(res, 400, 'Invalid LinkedIn URL');
+			return errorRes(res, 400, "Invalid LinkedIn URL");
 		if (devpost && !/devpost/.test(devpost))
-			return errorRes(res, 400, 'Invalid Devpost URL');
+			return errorRes(res, 400, "Invalid Devpost URL");
 		if (website && !isURL(website))
-			return errorRes(res, 400, 'Invalid website URL');
-		const member = await Member.findById(req.params.id, '+password').exec();
-		if (!member) return errorRes(res, 400, 'Member not found');
+			return errorRes(res, 400, "Invalid website URL");
+		const member = await Member.findById(req.params.id, "+password").exec();
+		if (!member) return errorRes(res, 400, "Member not found");
 		if (!compareSync(password, member.password))
-			return errorRes(res, 401, 'Incorrect password');
+			return errorRes(res, 401, "Incorrect password");
 
-		const picture = files.find(file => file.fieldname === 'picture');
-		const resume = files.find(file => file.fieldname === 'resume');
+		const picture = files.find(file => file.fieldname === "picture");
+		const resume = files.find(file => file.fieldname === "resume");
 		if (picture)
-			member.picture = await uploadToStorage(picture, 'pictures', member);
+			member.picture = await uploadToStorage(picture, "pictures", member);
 		if (resume)
-			member.resume = await uploadToStorage(resume, 'resumes', member);
+			member.resume = await uploadToStorage(resume, "resumes", member);
 		member.name = name;
 		member.email = email;
 		member.password = password;
@@ -237,16 +256,16 @@ router.put('/:id', auth(), multer.any(), async (req, res) => {
 });
 
 router.post(
-	'/organizer',
+	"/organizer",
 	auth(),
-	hasPermissions(['permissions']),
+	hasPermissions(["permissions"]),
 	async (req, res) => {
 		try {
 			const { email } = req.body;
 			if (!email)
-				return errorRes(res, 400, 'Please enter member name or email');
+				return errorRes(res, 400, "Please enter member name or email");
 			const permissions = await Permission.find()
-				.where('organizer')
+				.where("organizer")
 				.ne(0)
 				.exec();
 
@@ -254,7 +273,7 @@ router.post(
 				$or: [{ name: email }, { email }]
 			}).exec();
 
-			if (!member) return errorRes(res, 400, 'Member not found');
+			if (!member) return errorRes(res, 400, "Member not found");
 
 			const [m, p] = await addMemberToPermissions(
 				member,
@@ -270,45 +289,45 @@ router.post(
 	}
 );
 
-router.delete('/:id', auth(), hasPermissions(['admin']), async (req, res) => {
+router.delete("/:id", auth(), hasPermissions(["admin"]), async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
-			return errorRes(res, 400, 'Invalid member ID');
+			return errorRes(res, 400, "Invalid member ID");
 
 		const [member, jobs] = await Promise.all([
-			Member.findById(req.params.id, '_id')
+			Member.findById(req.params.id, "_id")
 				.populate([
 					{
-						path: 'permissions',
-						model: 'Permission',
-						select: 'members.member'
+						path: "permissions",
+						model: "Permission",
+						select: "members.member"
 					},
 					{
-						path: 'events',
-						model: 'Event',
-						select: '_id'
+						path: "events",
+						model: "Event",
+						select: "_id"
 					},
 					{
-						path: 'locations.location',
-						model: 'Location',
-						select: '_id',
+						path: "locations.location",
+						model: "Location",
+						select: "_id",
 						populate: {
-							path: 'members.member',
-							model: 'Member',
-							select: '_id'
+							path: "members.member",
+							model: "Member",
+							select: "_id"
 						}
 					}
 				])
 				.exec(),
 			Job.find()
 				.populate([
-					{ path: 'member', select: '_id' },
-					{ path: 'location', select: '_id' }
+					{ path: "member", select: "_id" },
+					{ path: "location", select: "_id" }
 				])
 				.exec()
 		]);
 
-		if (!member) return errorRes(res, 400, 'Member does not exist');
+		if (!member) return errorRes(res, 400, "Member does not exist");
 
 		for (const event of member.events) {
 			await Promise.all([
@@ -343,18 +362,18 @@ router.delete('/:id', auth(), hasPermissions(['admin']), async (req, res) => {
 
 		return successRes(res, member);
 	} catch (error) {
-		console.error('Error:', error);
+		console.error("Error:", error);
 		return errorRes(res, 500, error);
 	}
 });
 
-router.get('/:id/events', async (req, res) => {
+router.get("/:id/events", async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
-			return errorRes(res, 400, 'Invalid member ID');
+			return errorRes(res, 400, "Invalid member ID");
 		const member = await Member.findById(req.params.id)
 			.populate({
-				path: 'events',
+				path: "events",
 				model: Event
 			})
 			.lean()
@@ -371,13 +390,13 @@ router.get('/:id/events', async (req, res) => {
 	}
 });
 
-router.get('/:id/locations', async (req, res) => {
+router.get("/:id/locations", async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))
-			return errorRes(res, 400, 'Invalid member ID');
+			return errorRes(res, 400, "Invalid member ID");
 		const member = await Member.findById(req.params.id)
 			.populate({
-				path: 'locations.location',
+				path: "locations.location",
 				model: Location
 			})
 			.lean()
@@ -391,10 +410,10 @@ router.get('/:id/locations', async (req, res) => {
 	}
 });
 
-router.get('/:id/jobs', async (req, res) => {
+router.get("/:id/jobs", async (req, res) => {
 	try {
 		const jobs = await Job.find({ member: req.params.id })
-			.populate('location')
+			.populate("location")
 			.exec();
 		return successRes(res, jobs);
 	} catch (error) {

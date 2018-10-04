@@ -115,6 +115,17 @@ export const fetchMembers = async params => {
 	}
 };
 
+export const fetchMajors = async () => {
+	try {
+		const {
+			data: { response }
+		} = await axios.get('/api/members/majors');
+		return response;
+	} catch (error) {
+		throw error.response.data;
+	}
+};
+
 export const fetchMember = async (id, params) => {
 	try {
 		const token = getToken();
