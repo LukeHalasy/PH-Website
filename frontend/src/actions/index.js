@@ -126,6 +126,17 @@ export const fetchMajors = async () => {
 	}
 };
 
+export const fetchMembersNumEvents = async () => {
+	try {
+		const {
+			data: { response }
+		} = await axios.get('/api/members/num_events');
+		return response;
+	} catch (error) {
+		throw error.response.data;
+	}
+};
+
 export const fetchMember = async (id, params) => {
 	try {
 		const token = getToken();

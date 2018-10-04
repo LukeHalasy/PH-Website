@@ -118,6 +118,25 @@ router.get("/majors", async (req, res) => {
 	}
 });
 
+router.get("/num_events", async (req, res) => {
+	try {
+		const results = await Member.find(
+			{ events: { $ne: [] } },
+			"events"
+		).exec();
+
+		var membersNumEvents: number[] = new Array();
+		for (let result of results) {
+			membersNumEvents.push(result.events.length);
+		}
+
+		return successRes(res, { membersNumEvents });
+	} catch (error) {
+		console.error(error);
+		return errorRes(res, 500, error);
+	}
+});
+
 router.get("/:id", async (req, res) => {
 	try {
 		if (!ObjectId.isValid(req.params.id))

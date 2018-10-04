@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { MemberTable, Header } from '../Common';
 import routes, { hasPermission } from '../../constants';
-import { fetchMembers, fetchMajors } from '../../actions';
+import { fetchMembers, fetchMajors, fetchMembersNumEvents, fetchEvents } from '../../actions';
 import { Bar, Line } from 'react-chartjs-2';
 import '../Common/AboutSection.css';
 import '../Common/EventSection.css';
@@ -24,6 +24,8 @@ class ReportsPage extends Component {
 		this.state = {
 			members: [],
 			majors: [],
+			membersNumEvents: [],
+			events: [],
 			loading: true
 		};
 	}
@@ -31,9 +33,14 @@ class ReportsPage extends Component {
 	componentDidMount = async () => {
 		const { members } = await fetchMembers({});
 		const { majors } = await fetchMajors();
+		const { membersNumEvents } = await fetchMembersNumEvents();
+		const { events } = await fetchEvents({});
+
 		console.log('ReportsPage fetched members:', members);
 		console.log('ReportsPage fetched majors:', majors);
-		this.setState({ members, majors, loading: false });
+		console.log('ReportsPage fetched membersNumEvents:', membersNumEvents);
+		console.log('ReportsPage fetched events:', events);
+		this.setState({ members, majors, membersNumEvents, events, loading: false });
 	};
 
 	getClassData = () => {
@@ -140,6 +147,7 @@ class ReportsPage extends Component {
 				}
 			}
 		}
+
 		const data = {
 			labels: Object.keys(numPeoplePerDateJoined).reverse(),
 			datasets: [
@@ -229,6 +237,88 @@ class ReportsPage extends Component {
 		return data;
 	};
 
+	getMembersEventAttendance = () => {
+		const eventAttendance = {};
+
+		for (var i = 0; i < this.state.membersNumEvents.length; i++) {
+			if (eventAttendance[this.state.membersNumEvents[i]]) {
+				eventAttendance[this.state.membersNumEvents[i]] += 1;
+			} else {
+				eventAttendance[this.state.membersNumEvents[i]] = 1;
+			}
+		}
+
+		const date = {
+			labels: Object.keys(eventAttendance),
+			datasets: [
+				{
+					label: 'Members Event Attendance',
+					backgroundColor: 'rgba(82, 90, 122, 0.2)',
+					borderColor: 'rgba(82, 90, 122, 1)',
+					borderWidth: 1,
+					hoverBackgroundColor: 'rgba(82, 90, 122, 0.4)',
+					hoverBorderColor: 'rgba(82, 90, 122, 1)',
+					data: Object.values(eventAttendance)
+				}
+			]
+		};
+
+		return date;
+	};
+
+	getEventAttendance = () => {
+		var numAttendeesPerDate = {};
+
+		for (var i = 0; i < this.state.events.length; i++) {
+			if (this.state.events[i].members && this.state.events[i].members.length > 0) {
+				const date = new Date(this.state.events[i].eventTime);
+				const month = date.getMonth();
+				const year = date.getFullYear();
+				var formattedDate;
+				if (month + 1 < 10) {
+					formattedDate = `0${month + 1}/${year}`;
+				} else {
+					formattedDate = `${month + 1}/${year}`;
+				}
+
+				if (!numAttendeesPerDate[formattedDate]) {
+					numAttendeesPerDate[formattedDate] = this.state.events[i].members.length;
+				} else {
+					numAttendeesPerDate[formattedDate] += this.state.events[i].members.length;
+				}
+			}
+		}
+
+		const data = {
+			labels: Object.keys(numAttendeesPerDate).reverse(),
+			datasets: [
+				{
+					label: 'Event Attendance Per Month',
+					fill: false,
+					lineTension: 0.1,
+					backgroundColor: 'rgba(255, 99, 132, 0.4)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					borderCapStyle: 'butt',
+					borderDash: [],
+					borderDashOffset: 0.0,
+					borderJoinStyle: 'miter',
+					pointBorderColor: 'rgba(255, 99, 132, 1)',
+					pointBackgroundColor: '#fff',
+					pointBorderWidth: 1,
+					pointHoverRadius: 5,
+					pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+					pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+					pointHoverBorderWidth: 2,
+					pointRadius: 1,
+					pointHitRadius: 10,
+					data: Object.values(numAttendeesPerDate).reverse()
+				}
+			]
+		};
+
+		return data;
+	};
+
 	render() {
 		const { members, loading } = this.state;
 		const { user } = this.props;
@@ -257,6 +347,18 @@ class ReportsPage extends Component {
 					<div className="section-container">
 						<Header message="Reports" />
 						<Line data={this.getCumulativeDateJoinedData()} />
+					</div>
+				</div>
+				<div className="section about">
+					<div className="section-container">
+						<Header message="Reports" />
+						<Bar data={this.getMembersEventAttendance()} />
+					</div>
+				</div>
+				<div className="section about">
+					<div className="section-container">
+						<Header message="Reports" />
+						<Line data={this.getEventAttendance()} />
 					</div>
 				</div>
 			</div>
