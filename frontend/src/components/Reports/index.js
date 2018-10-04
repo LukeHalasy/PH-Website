@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { MemberTable, Header } from '../Common';
 import routes, { hasPermission } from '../../constants';
 import { fetchMembers, fetchMajors } from '../../actions';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import '../Common/AboutSection.css';
 import '../Common/EventSection.css';
 
@@ -38,7 +38,6 @@ class ReportsPage extends Component {
 
 	getClassData = () => {
 		const gradeData = [0, 0, 0, 0];
-		console.log('Members2!: ', this.state.members.length);
 
 		for (var i = 0; i < this.state.members.length; i++) {
 			if (this.state.members[i].graduationYear) {
@@ -64,7 +63,7 @@ class ReportsPage extends Component {
 			}
 		}
 
-		const classData = {
+		const data = {
 			labels: ['Freshman', 'Sophomore', 'Junior', 'Senior'],
 			datasets: [
 				{
@@ -79,7 +78,7 @@ class ReportsPage extends Component {
 			]
 		};
 
-		return classData;
+		return data;
 	};
 
 	getMajorData = () => {
@@ -95,32 +94,139 @@ class ReportsPage extends Component {
 			Other: 0
 		};
 
-		console.log('------members----', this.state.majors);
-
 		for (var i = 0; i < this.state.majors.length; i++) {
 			if (this.state.majors[i]) {
 				majorDataDict[this.state.majors[i]] += 1;
 			}
 		}
 
-		console.log(majorDataDict);
-
-		const majorData = {
-			labels: Object.keys(majorDataDict),
+		const date = {
+			labels: ['CS', 'CGT', 'CIT', 'ECE', 'EE', 'FYE', 'ME', 'Other'],
 			datasets: [
 				{
 					label: 'Major Distribution',
-					backgroundColor: 'rgba(255,99,132,0.2)',
-					borderColor: 'rgba(255,99,132,1)',
+					backgroundColor: 'rgba(50,144,154,0.2)',
+					borderColor: 'rgba(50,144,154,1)',
 					borderWidth: 1,
-					hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-					hoverBorderColor: 'rgba(255,99,132,1)',
+					hoverBackgroundColor: 'rgba(50,144,154,0.4)',
+					hoverBorderColor: 'rgba(50,144,154,1)',
 					data: Object.values(majorDataDict)
 				}
 			]
 		};
 
-		return majorData;
+		return date;
+	};
+
+	getSpecificDateJoinedData = () => {
+		var numPeoplePerDateJoined = {};
+
+		for (var i = 0; i < this.state.members.length; i++) {
+			if (this.state.members[i].createdAt) {
+				const date = new Date(this.state.members[i].createdAt);
+				const month = date.getMonth();
+				const year = date.getFullYear();
+				var formattedDate;
+				if (month + 1 < 10) {
+					formattedDate = `0${month + 1}/${year}`;
+				} else {
+					formattedDate = `${month + 1}/${year}`;
+				}
+
+				if (!numPeoplePerDateJoined[formattedDate]) {
+					numPeoplePerDateJoined[formattedDate] = 1;
+				} else {
+					numPeoplePerDateJoined[formattedDate] += 1;
+				}
+			}
+		}
+		const data = {
+			labels: Object.keys(numPeoplePerDateJoined).reverse(),
+			datasets: [
+				{
+					label: '# New Members Per Month',
+					fill: false,
+					lineTension: 0.1,
+					backgroundColor: 'rgba(155, 232, 184, 0.4)',
+					borderColor: 'rgba(155, 232, 184, 1)',
+					borderCapStyle: 'butt',
+					borderDash: [],
+					borderDashOffset: 0.0,
+					borderJoinStyle: 'miter',
+					pointBorderColor: 'rgba(155, 232, 184, 1)',
+					pointBackgroundColor: '#fff',
+					pointBorderWidth: 1,
+					pointHoverRadius: 5,
+					pointHoverBackgroundColor: 'rgba(155, 232, 184, 1)',
+					pointHoverBorderColor: 'rgba(155, 232, 1840, 1)',
+					pointHoverBorderWidth: 2,
+					pointRadius: 1,
+					pointHitRadius: 10,
+					data: Object.values(numPeoplePerDateJoined).reverse()
+				}
+			]
+		};
+
+		return data;
+	};
+
+	getCumulativeDateJoinedData = () => {
+		var numPeopleAtDate = {};
+
+		for (var i = 0; i < this.state.members.length; i++) {
+			if (this.state.members[i].createdAt) {
+				const date = new Date(this.state.members[i].createdAt);
+				const month = date.getMonth();
+				const year = date.getFullYear();
+				var formattedDate;
+				if (month + 1 < 10) {
+					formattedDate = `0${month + 1}/${year}`;
+				} else {
+					formattedDate = `${month + 1}/${year}`;
+				}
+
+				if (!numPeopleAtDate[formattedDate]) {
+					numPeopleAtDate[formattedDate] = 1;
+				} else {
+					numPeopleAtDate[formattedDate] += 1;
+				}
+			}
+		}
+
+		for (var i = Object.keys(numPeopleAtDate).length - 2; i >= 0; i--) {
+			const currDate = Object.keys(numPeopleAtDate)[i];
+			const prevDate = Object.keys(numPeopleAtDate)[i + 1];
+			numPeopleAtDate[currDate] = numPeopleAtDate[currDate] + numPeopleAtDate[prevDate];
+		}
+
+		const data = {
+			labels: Object.keys(numPeopleAtDate).reverse(),
+			datasets: [
+				{
+					label: '# Members',
+					fill: false,
+					lineTension: 0.1,
+					backgroundColor: 'rgba(238, 218, 105, 0.4)',
+					borderColor: 'rgba(238, 218, 105, 1)',
+					borderCapStyle: 'butt',
+					borderDash: [],
+					borderDashOffset: 0.0,
+					borderJoinStyle: 'miter',
+					pointBorderColor: 'rgba(238, 218, 105, 1)',
+					pointBackgroundColor: '#fff',
+					pointBorderWidth: 1,
+					pointHoverRadius: 5,
+					pointHoverBackgroundColor: 'rgba(238, 218, 105, 1)',
+					pointHoverBorderColor: 'rgba((238, 218, 105, 1)',
+					pointHoverBorderWidth: 2,
+					pointRadius: 1,
+					pointHitRadius: 10,
+					data: Object.values(numPeopleAtDate).reverse()
+				}
+			]
+		};
+
+		return data;
 	};
 
 	render() {
@@ -139,6 +245,18 @@ class ReportsPage extends Component {
 					<div className="section-container">
 						<Header message="Reports" />
 						<Bar data={this.getMajorData} />
+					</div>
+				</div>
+				<div className="section about">
+					<div className="section-container">
+						<Header message="Reports" />
+						<Line data={this.getSpecificDateJoinedData()} />
+					</div>
+				</div>
+				<div className="section about">
+					<div className="section-container">
+						<Header message="Reports" />
+						<Line data={this.getCumulativeDateJoinedData()} />
 					</div>
 				</div>
 			</div>
