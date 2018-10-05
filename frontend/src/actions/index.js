@@ -611,3 +611,70 @@ export const storageChanged = e => dispatch => {
 	dispatch(setToken(getToken()));
 	dispatch(setUser(getCurrentUser()));
 };
+
+// Getting Graph Data Functions
+
+export const getClassData = members => {
+	const gradeData = [0, 0, 0, 0];
+
+	for (var i = 0; i < members.length; i++) {
+		if (members[i].graduationYear) {
+			switch (members[i].graduationYear) {
+				//freshman
+				case 2022:
+					gradeData[0] += 1;
+					break;
+				//sophomore
+				case 2021:
+					gradeData[1] += 1;
+					break;
+				//junior
+				case 2020:
+					gradeData[2] += 1;
+					break;
+				//senior
+				case 2019:
+					gradeData[3] += 1;
+				default:
+					break;
+			}
+		}
+	}
+
+	const data = {
+		labels: ['Freshman', 'Sophomore', 'Junior', 'Senior'],
+		datasets: [
+			{
+				label: 'Class Distribution',
+				backgroundColor: 'rgba(255,99,132,0.2)',
+				borderColor: 'rgba(255,99,132,1)',
+				borderWidth: 1,
+				hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+				hoverBorderColor: 'rgba(255,99,132,1)',
+				data: gradeData
+			}
+		]
+	};
+	return data;
+};
+
+export const getMajorData = majorDataDict => {
+	//TODO:_> Sort by greatest to least
+
+	const data = {
+		labels: ['CS', 'CGT', 'CIT', 'ECE', 'EE', 'FYE', 'ME', 'Other'],
+		datasets: [
+			{
+				label: 'Major Distribution',
+				backgroundColor: 'rgba(50,144,154,0.2)',
+				borderColor: 'rgba(50,144,154,1)',
+				borderWidth: 1,
+				hoverBackgroundColor: 'rgba(50,144,154,0.4)',
+				hoverBorderColor: 'rgba(50,144,154,1)',
+				data: Object.values(majorDataDict)
+			}
+		]
+	};
+
+	return data;
+};

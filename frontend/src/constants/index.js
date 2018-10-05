@@ -59,6 +59,7 @@ export default {
 	EDIT_PROFILE: '/member/:id/edit',
 	EVENTS: '/events',
 	EVENT: '/event/:id',
+	EVENT_REPORT: '/event/:id/report',
 	CREATE_EVENT: '/events/create',
 	EDIT_EVENT: '/event/:id/edit',
 	CHECKIN_EVENT: '/event/:id/checkin',

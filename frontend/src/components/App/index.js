@@ -31,6 +31,7 @@ import SignUp from '../Signup';
 import ForgotPassword from '../ForgotPassword';
 import ResetPassword from '../ResetPassword';
 import Reports from '../Reports';
+import EventReport from '../EventReport';
 import { storageChanged, clearFlashMessages, fetchProfile } from '../../actions';
 import './index.css';
 
@@ -92,6 +93,7 @@ class App extends Component {
 						<Route exact path={routes.MEMBER} component={Member} />
 						<Route exact path={routes.EVENTS} component={Events} />
 						<Route exact path={routes.EVENT} component={Event} />
+						<Route exact path={routes.EVENT_REPORT} component={EventReport} />
 						<Route exact path={routes.REPORTS} component={Reports} />
 						<ProtectedRoute
 							token={token}

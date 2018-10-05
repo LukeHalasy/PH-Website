@@ -4,7 +4,14 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { MemberTable, Header } from '../Common';
 import routes, { hasPermission } from '../../constants';
-import { fetchMembers, fetchMajors, fetchMembersNumEvents, fetchEvents } from '../../actions';
+import {
+	fetchMembers,
+	fetchMajors,
+	fetchMembersNumEvents,
+	fetchEvents,
+	getClassData,
+	getMajorData
+} from '../../actions';
 import { Bar, Line } from 'react-chartjs-2';
 import '../Common/AboutSection.css';
 import '../Common/EventSection.css';
@@ -43,52 +50,7 @@ class ReportsPage extends Component {
 		this.setState({ members, majors, membersNumEvents, events, loading: false });
 	};
 
-	getClassData = () => {
-		const gradeData = [0, 0, 0, 0];
-
-		for (var i = 0; i < this.state.members.length; i++) {
-			if (this.state.members[i].graduationYear) {
-				switch (this.state.members[i].graduationYear) {
-					//freshman
-					case 2022:
-						gradeData[0] += 1;
-						break;
-					//sophomore
-					case 2021:
-						gradeData[1] += 1;
-						break;
-					//junior
-					case 2020:
-						gradeData[2] += 1;
-						break;
-					case 2019:
-						gradeData[3] += 1;
-					//senior
-					default:
-						break;
-				}
-			}
-		}
-
-		const data = {
-			labels: ['Freshman', 'Sophomore', 'Junior', 'Senior'],
-			datasets: [
-				{
-					label: 'Class Distribution',
-					backgroundColor: 'rgba(255,99,132,0.2)',
-					borderColor: 'rgba(255,99,132,1)',
-					borderWidth: 1,
-					hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-					hoverBorderColor: 'rgba(255,99,132,1)',
-					data: gradeData
-				}
-			]
-		};
-
-		return data;
-	};
-
-	getMajorData = () => {
+	setUpMajorData = () => {
 		const majorDataDict = {
 			'Computer Science': 0,
 			'Computer Graphics Technology': 0,
@@ -107,22 +69,7 @@ class ReportsPage extends Component {
 			}
 		}
 
-		const date = {
-			labels: ['CS', 'CGT', 'CIT', 'ECE', 'EE', 'FYE', 'ME', 'Other'],
-			datasets: [
-				{
-					label: 'Major Distribution',
-					backgroundColor: 'rgba(50,144,154,0.2)',
-					borderColor: 'rgba(50,144,154,1)',
-					borderWidth: 1,
-					hoverBackgroundColor: 'rgba(50,144,154,0.4)',
-					hoverBorderColor: 'rgba(50,144,154,1)',
-					data: Object.values(majorDataDict)
-				}
-			]
-		};
-
-		return date;
+		return getMajorData(majorDataDict);
 	};
 
 	getSpecificDateJoinedData = () => {
@@ -328,36 +275,36 @@ class ReportsPage extends Component {
 				<div className="section events" style={{ textAlign: 'left' }}>
 					<div className="section-container">
 						<Header message="Class Data" />
-						<Bar data={this.getClassData} />
+						<Bar data={getClassData(members)} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
-						<Header message="Reports" />
-						<Bar data={this.getMajorData} />
+						<Header message="Major Data" />
+						<Bar data={this.setUpMajorData()} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
-						<Header message="Reports" />
+						<Header message="Specific Date Joined" />
 						<Line data={this.getSpecificDateJoinedData()} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
-						<Header message="Reports" />
+						<Header message="Cumulative Data Joined Data" />
 						<Line data={this.getCumulativeDateJoinedData()} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
-						<Header message="Reports" />
+						<Header message="Member Event Attendance" />
 						<Bar data={this.getMembersEventAttendance()} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
-						<Header message="Reports" />
+						<Header message="Get Event Attendance" />
 						<Line data={this.getEventAttendance()} />
 					</div>
 				</div>
@@ -690,3 +637,5 @@ export default connect(
 //     return $majorsData;
 // }
 //
+
+// (((((( EVENT STUFF ))))))
