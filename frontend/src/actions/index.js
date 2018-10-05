@@ -126,6 +126,17 @@ export const fetchMajors = async () => {
 	}
 };
 
+export const fetchEventsPriorToEvent = async id => {
+	try {
+		const {
+			data: { response }
+		} = await axios.get(`/api/events/before/${id}`);
+		return response;
+	} catch (error) {
+		throw error.response.data;
+	}
+};
+
 export const fetchMembersNumEvents = async () => {
 	try {
 		const {
@@ -614,38 +625,12 @@ export const storageChanged = e => dispatch => {
 
 // Getting Graph Data Functions
 
-export const getClassData = members => {
-	const gradeData = [0, 0, 0, 0];
-
-	for (var i = 0; i < members.length; i++) {
-		if (members[i].graduationYear) {
-			switch (members[i].graduationYear) {
-				//freshman
-				case 2022:
-					gradeData[0] += 1;
-					break;
-				//sophomore
-				case 2021:
-					gradeData[1] += 1;
-					break;
-				//junior
-				case 2020:
-					gradeData[2] += 1;
-					break;
-				//senior
-				case 2019:
-					gradeData[3] += 1;
-				default:
-					break;
-			}
-		}
-	}
-
+export const getClassData = (gradeData, msg) => {
 	const data = {
 		labels: ['Freshman', 'Sophomore', 'Junior', 'Senior'],
 		datasets: [
 			{
-				label: 'Class Distribution',
+				label: msg ? `Class Distribution ${msg}` : 'Class Distribution',
 				backgroundColor: 'rgba(255,99,132,0.2)',
 				borderColor: 'rgba(255,99,132,1)',
 				borderWidth: 1,
@@ -655,6 +640,7 @@ export const getClassData = members => {
 			}
 		]
 	};
+
 	return data;
 };
 
@@ -677,4 +663,45 @@ export const getMajorData = majorDataDict => {
 	};
 
 	return data;
+};
+
+export const getMembersEventAttendance = (eventAttendance, title) => {
+	//MAKE THIS FOR THE TIME OF ATTENDANCE
+	const date = {
+		labels: Object.keys(eventAttendance),
+		datasets: [
+			{
+				label: `${title}`,
+				backgroundColor: 'rgba(82, 90, 122, 0.2)',
+				borderColor: 'rgba(82, 90, 122, 1)',
+				borderWidth: 0,
+				hoverBackgroundColor: 'rgba(82, 90, 122, 0.4)',
+				hoverBorderColor: 'rgba(82, 90, 122, 1)',
+				data: Object.values(eventAttendance)
+			}
+		]
+	};
+
+	return date;
+};
+
+// Getting graph option(s) functions
+
+export const getMembersEventAttendanceOptions = () => {
+	return {
+		scales: {
+			yAxes: [
+				{
+					ticks: {
+						beginAtZero: true,
+						callback: function(value) {
+							if (Number.isInteger(value)) {
+								return value;
+							}
+						}
+					}
+				}
+			]
+		}
+	};
 };

@@ -7,7 +7,10 @@ import {
 	clearFlashMessages,
 	fetchEvent,
 	getClassData,
-	getMajorData
+	getMajorData,
+	getMembersEventAttendance,
+	getMembersEventAttendanceOptions,
+	fetchEventsPriorToEvent
 } from '../../actions';
 import { err } from '../../constants';
 import { CustomRedirect, Header } from '../Common';
@@ -21,8 +24,7 @@ class ReportsPage extends Component {
 			})
 		}).isRequired,
 		flash: PropTypes.func.isRequired,
-		clear: PropTypes.func.isRequired,
-		user: PropTypes.object.isRequired
+		clear: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -45,6 +47,21 @@ class ReportsPage extends Component {
 		try {
 			clear();
 			const event = await fetchEvent(id);
+
+			//filter out events that members went too after the event
+			//This way we can accurately track new event attenders and
+			//how many events the members had attended before this event
+
+			//Get all event ids for events before this one
+			const { eventsBeforeIds } = await fetchEventsPriorToEvent(event._id);
+			const eventDate = new Date(event.eventTime);
+
+			for (var i = 0; i < event.members.length; i++) {
+				event.members[i].events = event.members[i].events.filter(eventId => {
+					return eventsBeforeIds.includes(eventId);
+				});
+			}
+
 			console.log('Fetched event:', event);
 
 			this.setState({ event, loading: false });
@@ -54,7 +71,55 @@ class ReportsPage extends Component {
 		}
 	};
 
-	setUpMajorData = () => {
+	setupClassData = () => {
+		const gradeData = [0, 0, 0, 0];
+
+		var FRESHMAN;
+		var SOPHOMORE;
+		var JUNIOR;
+		var SENIOR;
+
+		//if the event took place during first semester
+		//0 indexed months so add 1..
+		const eventDate = new Date(this.state.event.eventTime);
+		if (eventDate.getMonth() + 1 >= 8) {
+			FRESHMAN = eventDate.getFullYear() + 4;
+		} else {
+			//Spring
+			FRESHMAN = eventDate.getFullYear() + 3;
+		}
+
+		SOPHOMORE = FRESHMAN - 1;
+		JUNIOR = SOPHOMORE - 1;
+		SENIOR = JUNIOR - 1;
+
+		for (var i = 0; i < this.state.event.members.length; i++) {
+			if (this.state.event.members[i].graduationYear) {
+				switch (this.state.event.members[i].graduationYear) {
+					case FRESHMAN:
+						gradeData[0] += 1;
+						break;
+					//sophomore
+					case SOPHOMORE:
+						gradeData[1] += 1;
+						break;
+					//junior
+					case JUNIOR:
+						gradeData[2] += 1;
+						break;
+					//senior
+					case SENIOR:
+						gradeData[3] += 1;
+					default:
+						break;
+				}
+			}
+		}
+
+		return getClassData(gradeData, `in ${eventDate.getFullYear()}`);
+	};
+
+	setupMajorData = () => {
 		const majorDataDict = {
 			'Computer Science': 0,
 			'Computer Graphics Technology': 0,
@@ -74,6 +139,27 @@ class ReportsPage extends Component {
 		}
 
 		return getMajorData(majorDataDict);
+	};
+
+	setupMembersEventAttendance = () => {
+		//Make this for the time of event
+		const eventAttendance = {};
+		const eventDate = new Date(this.state.event.eventTime);
+
+		for (var i = 0; i < this.state.event.members.length; i++) {
+			if (this.state.event.members[i].events != null) {
+				if (eventAttendance[this.state.event.members[i].events.length]) {
+					eventAttendance[this.state.event.members[i].events.length] += 1;
+				} else {
+					eventAttendance[this.state.event.members[i].events.length] = 1;
+				}
+			}
+		}
+
+		return getMembersEventAttendance(
+			eventAttendance,
+			`Attendees Event Attendance in ${eventDate.getFullYear()} Before ${this.state.event.name}`
+		);
 	};
 
 	render() {
@@ -100,13 +186,22 @@ class ReportsPage extends Component {
 				<div className="section">
 					<div className="section-container">
 						<Header message="Class Data" />
-						<Bar data={getClassData(event.members)} />
+						<Bar data={this.setupClassData()} />
 					</div>
 				</div>
 				<div className="section">
 					<div className="section-container">
 						<Header message="Major Data" />
-						<Bar data={this.setUpMajorData()} />
+						<Bar data={this.setupMajorData()} />
+					</div>
+				</div>
+				<div className="section">
+					<div className="section-container">
+						<Header message="Member Event Attendance" />
+						<Bar
+							data={this.setupMembersEventAttendance()}
+							options={getMembersEventAttendanceOptions()}
+						/>
 					</div>
 				</div>
 			</div>

@@ -10,7 +10,9 @@ import {
 	fetchMembersNumEvents,
 	fetchEvents,
 	getClassData,
-	getMajorData
+	getMajorData,
+	getMembersEventAttendance,
+	getMembersEventAttendanceOptions
 } from '../../actions';
 import { Bar, Line } from 'react-chartjs-2';
 import '../Common/AboutSection.css';
@@ -50,7 +52,36 @@ class ReportsPage extends Component {
 		this.setState({ members, majors, membersNumEvents, events, loading: false });
 	};
 
-	setUpMajorData = () => {
+	setupClassData = () => {
+		const gradeData = [0, 0, 0, 0];
+
+		for (var i = 0; i < this.state.members.length; i++) {
+			if (this.state.members[i].graduationYear) {
+				switch (this.state.members[i].graduationYear) {
+					//freshman
+					case 2022:
+						gradeData[0] += 1;
+						break;
+					//sophomore
+					case 2021:
+						gradeData[1] += 1;
+						break;
+					//junior
+					case 2020:
+						gradeData[2] += 1;
+						break;
+					//senior
+					case 2019:
+						gradeData[3] += 1;
+					default:
+						break;
+				}
+			}
+		}
+
+		return getClassData(gradeData);
+	};
+	setupMajorData = () => {
 		const majorDataDict = {
 			'Computer Science': 0,
 			'Computer Graphics Technology': 0,
@@ -184,7 +215,7 @@ class ReportsPage extends Component {
 		return data;
 	};
 
-	getMembersEventAttendance = () => {
+	setupMembersEventAttendance = () => {
 		const eventAttendance = {};
 
 		for (var i = 0; i < this.state.membersNumEvents.length; i++) {
@@ -195,22 +226,7 @@ class ReportsPage extends Component {
 			}
 		}
 
-		const date = {
-			labels: Object.keys(eventAttendance),
-			datasets: [
-				{
-					label: 'Members Event Attendance',
-					backgroundColor: 'rgba(82, 90, 122, 0.2)',
-					borderColor: 'rgba(82, 90, 122, 1)',
-					borderWidth: 1,
-					hoverBackgroundColor: 'rgba(82, 90, 122, 0.4)',
-					hoverBorderColor: 'rgba(82, 90, 122, 1)',
-					data: Object.values(eventAttendance)
-				}
-			]
-		};
-
-		return date;
+		return getMembersEventAttendance(eventAttendance, 'Members Event Attendance');
 	};
 
 	getEventAttendance = () => {
@@ -275,13 +291,13 @@ class ReportsPage extends Component {
 				<div className="section events" style={{ textAlign: 'left' }}>
 					<div className="section-container">
 						<Header message="Class Data" />
-						<Bar data={getClassData(members)} />
+						<Bar data={this.setupClassData()} />
 					</div>
 				</div>
 				<div className="section about">
 					<div className="section-container">
 						<Header message="Major Data" />
-						<Bar data={this.setUpMajorData()} />
+						<Bar data={this.setupMajorData()} />
 					</div>
 				</div>
 				<div className="section about">
@@ -299,7 +315,10 @@ class ReportsPage extends Component {
 				<div className="section about">
 					<div className="section-container">
 						<Header message="Member Event Attendance" />
-						<Bar data={this.getMembersEventAttendance()} />
+						<Bar
+							data={this.setupMembersEventAttendance()}
+							options={getMembersEventAttendanceOptions()}
+						/>
 					</div>
 				</div>
 				<div className="section about">
