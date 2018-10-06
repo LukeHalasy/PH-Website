@@ -94,7 +94,6 @@ class App extends Component {
 						<Route exact path={routes.EVENTS} component={Events} />
 						<Route exact path={routes.EVENT} component={Event} />
 						<Route exact path={routes.EVENT_REPORT} component={EventReport} />
-						<Route exact path={routes.REPORTS} component={Reports} />
 						<ProtectedRoute
 							token={token}
 							user={user}
@@ -156,6 +155,13 @@ class App extends Component {
 							exact
 							path={routes.ANVIL_WIFI}
 							component={AnvilWifi}
+						/>
+						<ProtectedRoute
+							token={token}
+							user={user}
+							exact
+							path={routes.MEMBERS_REPORT}
+							component={Reports}
 						/>
 						<Route component={NotFound} />
 					</Switch>

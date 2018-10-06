@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { MemberTable, Header } from '../Common';
-import routes, { hasPermission } from '../../constants';
+import { Header } from '../Common';
 import {
 	fetchMembers,
 	fetchMajors,
@@ -73,6 +71,7 @@ class ReportsPage extends Component {
 					//senior
 					case 2019:
 						gradeData[3] += 1;
+						break;
 					default:
 						break;
 				}
@@ -179,9 +178,9 @@ class ReportsPage extends Component {
 			}
 		}
 
-		for (var i = Object.keys(numPeopleAtDate).length - 2; i >= 0; i--) {
-			const currDate = Object.keys(numPeopleAtDate)[i];
-			const prevDate = Object.keys(numPeopleAtDate)[i + 1];
+		for (var j = Object.keys(numPeopleAtDate).length - 2; j >= 0; j--) {
+			const currDate = Object.keys(numPeopleAtDate)[j];
+			const prevDate = Object.keys(numPeopleAtDate)[j + 1];
 			numPeopleAtDate[currDate] = numPeopleAtDate[currDate] + numPeopleAtDate[prevDate];
 		}
 
@@ -283,9 +282,6 @@ class ReportsPage extends Component {
 	};
 
 	render() {
-		const { members, loading } = this.state;
-		const { user } = this.props;
-
 		return (
 			<div>
 				<div className="section events" style={{ textAlign: 'left' }}>

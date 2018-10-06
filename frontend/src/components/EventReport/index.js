@@ -14,7 +14,7 @@ import {
 } from '../../actions';
 import { err } from '../../constants';
 import { CustomRedirect, Header } from '../Common';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 class ReportsPage extends Component {
 	static propTypes = {
@@ -54,7 +54,6 @@ class ReportsPage extends Component {
 
 			//Get all event ids for events before this one
 			const { eventsBeforeIds } = await fetchEventsPriorToEvent(event._id);
-			const eventDate = new Date(event.eventTime);
 
 			for (var i = 0; i < event.members.length; i++) {
 				event.members[i].events = event.members[i].events.filter(eventId => {
@@ -110,6 +109,7 @@ class ReportsPage extends Component {
 					//senior
 					case SENIOR:
 						gradeData[3] += 1;
+						break;
 					default:
 						break;
 				}
