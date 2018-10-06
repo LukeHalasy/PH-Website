@@ -44,7 +44,7 @@ class MembersPage extends Component {
 						Members
 						<React.Fragment>
 							{hasPermission(user, 'members') && (
-								<Link to={routes.REPORTS} className="pull-left marginR">
+								<Link to={routes.MEMBERS_REPORT} className="pull-left marginR">
 									<button type="button" className="btn btn-primary btn-sm">
 										Graphs
 									</button>
@@ -86,4 +86,7 @@ const mapStateToProps = state => ({
 	...state.sessionState
 });
 
-export default connect(mapStateToProps, {})(MembersPage);
+export default connect(
+	mapStateToProps,
+	{}
+)(MembersPage);

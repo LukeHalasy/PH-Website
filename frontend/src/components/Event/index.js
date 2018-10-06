@@ -91,11 +91,6 @@ class EventPage extends Component {
 									Events
 								</button>
 							</Link>
-							<Link key={`${event._id}-4`} to={`/event/${event._id}/report`}>
-								<button type="button" className="pull-right marginR btn btn-primary btn-sm">
-									Report
-								</button>
-							</Link>
 							{hasPermission(user, 'events') && [
 								<Link key={`${event._id}-2`} to={`/event/${event._id}/edit`}>
 									<button
@@ -111,6 +106,14 @@ class EventPage extends Component {
 										className="pull-right marginR btn btn-primary btn-sm"
 									>
 										Checkin
+									</button>
+								</Link>,
+								<Link key={`${event._id}-4`} to={`/event/${event._id}/report`}>
+									<button
+										type="button"
+										className="pull-right marginR btn btn-primary btn-sm"
+									>
+										Graphs
 									</button>
 								</Link>
 							]}

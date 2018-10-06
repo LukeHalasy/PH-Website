@@ -652,11 +652,11 @@ export const getMajorData = majorDataDict => {
 		datasets: [
 			{
 				label: 'Major Distribution',
-				backgroundColor: 'rgba(50,144,154,0.2)',
-				borderColor: 'rgba(50,144,154,1)',
+				backgroundColor: 'rgba(0, 102, 255, 0.2)',
+				borderColor: 'rgba(0, 82, 204, 1)',
 				borderWidth: 1,
-				hoverBackgroundColor: 'rgba(50,144,154,0.4)',
-				hoverBorderColor: 'rgba(50,144,154,1)',
+				hoverBackgroundColor: 'rgba(0, 102, 255, 0.4)',
+				hoverBorderColor: 'rgba(0, 82, 204, 1)',
 				data: Object.values(majorDataDict)
 			}
 		]
@@ -666,23 +666,47 @@ export const getMajorData = majorDataDict => {
 };
 
 export const getMembersEventAttendance = (eventAttendance, title) => {
-	//MAKE THIS FOR THE TIME OF ATTENDANCE
-	const date = {
-		labels: Object.keys(eventAttendance),
+	// Group all data with >10 events into one >10 box
+	const maxEventValue = 10;
+	var refinedEventAttendance = {};
+	for (var i = 0; i < Object.keys(eventAttendance).length; i++) {
+		var gTEMaxEventValue = false;
+		if (Object.keys(eventAttendance)[i] >= maxEventValue) {
+			gTEMaxEventValue = true;
+		}
+
+		if (!gTEMaxEventValue) {
+			refinedEventAttendance[Object.keys(eventAttendance)[i]] =
+				eventAttendance[Object.keys(eventAttendance)[i]];
+		} else {
+			if (refinedEventAttendance[`>${maxEventValue}`]) {
+				refinedEventAttendance[`>${maxEventValue}`] +=
+					eventAttendance[Object.keys(eventAttendance)[i]];
+			} else {
+				refinedEventAttendance[`>${maxEventValue}`] =
+					eventAttendance[Object.keys(eventAttendance)[i]];
+			}
+		}
+	}
+
+	console.log(refinedEventAttendance);
+
+	const data = {
+		labels: Object.keys(refinedEventAttendance),
 		datasets: [
 			{
 				label: `${title}`,
-				backgroundColor: 'rgba(82, 90, 122, 0.2)',
-				borderColor: 'rgba(82, 90, 122, 1)',
-				borderWidth: 0,
-				hoverBackgroundColor: 'rgba(82, 90, 122, 0.4)',
-				hoverBorderColor: 'rgba(82, 90, 122, 1)',
-				data: Object.values(eventAttendance)
+				backgroundColor: 'rgba(179, 102, 255, 0.2)',
+				borderColor: 'rgba(140, 26, 255, 1)',
+				borderWidth: 1,
+				hoverBackgroundColor: 'rgba(179, 102, 255, 0.4)',
+				hoverBorderColor: 'rgba(140, 26, 255, 1)',
+				data: Object.values(refinedEventAttendance)
 			}
 		]
 	};
 
-	return date;
+	return data;
 };
 
 // Getting graph option(s) functions

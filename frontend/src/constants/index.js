@@ -66,7 +66,7 @@ export default {
 	MEMBERS: '/members',
 	MEMBER: '/member/:id',
 	CALENDAR: '/calendar',
-	REPORTS: '/members/reports',
+	MEMBERS_REPORT: '/members/report',
 	PERMISSIONS: '/permissions',
 	PERMISSION: '/permission/:id',
 	CREDENTIALS: '/credentials',

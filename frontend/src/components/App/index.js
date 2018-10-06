@@ -30,7 +30,7 @@ import Logout from '../Logout';
 import SignUp from '../Signup';
 import ForgotPassword from '../ForgotPassword';
 import ResetPassword from '../ResetPassword';
-import Reports from '../Reports';
+import MembersReport from '../MembersReport';
 import EventReport from '../EventReport';
 import { storageChanged, clearFlashMessages, fetchProfile } from '../../actions';
 import './index.css';
@@ -93,7 +93,6 @@ class App extends Component {
 						<Route exact path={routes.MEMBER} component={Member} />
 						<Route exact path={routes.EVENTS} component={Events} />
 						<Route exact path={routes.EVENT} component={Event} />
-						<Route exact path={routes.EVENT_REPORT} component={EventReport} />
 						<ProtectedRoute
 							token={token}
 							user={user}
@@ -145,14 +144,6 @@ class App extends Component {
 							token={token}
 							user={user}
 							exact
-							path={routes.PERMISSION}
-							roles={['permissions']}
-							component={Permission}
-						/>
-						<ProtectedRoute
-							token={token}
-							user={user}
-							exact
 							path={routes.ANVIL_WIFI}
 							component={AnvilWifi}
 						/>
@@ -161,7 +152,14 @@ class App extends Component {
 							user={user}
 							exact
 							path={routes.MEMBERS_REPORT}
-							component={Reports}
+							component={MembersReport}
+						/>
+						<ProtectedRoute
+							token={token}
+							user={user}
+							exact
+							path={routes.EVENT_REPORT}
+							component={EventReport}
 						/>
 						<Route component={NotFound} />
 					</Switch>

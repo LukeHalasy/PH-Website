@@ -174,7 +174,7 @@ class ReportsPage extends Component {
 				<div className="section">
 					<div className="section-container">
 						<Header message={event.name} />
-						<h3>Event - {event.name} </h3>
+						<h3>{event.name} Report</h3>
 						<Link key={`${match.params.id}-1`} to={`/event/${match.params.id}`}>
 							<button type="button" className="pull-left btn btn-primary btn-sm">
 								<span className="glyphicon glyphicon-chevron-left" aria-hidden="true" />
