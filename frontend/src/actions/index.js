@@ -711,6 +711,44 @@ export const getMembersEventAttendance = (eventAttendance, title) => {
 
 // Getting graph option(s) functions
 
+export const getClassOptions = () => {
+	return {
+		scales: {
+			yAxes: [
+				{
+					ticks: {
+						beginAtZero: true,
+						callback: function(value) {
+							if (Number.isInteger(value)) {
+								return value;
+							}
+						}
+					}
+				}
+			]
+		}
+	};
+};
+
+export const getMajorOptions = () => {
+	return {
+		scales: {
+			yAxes: [
+				{
+					ticks: {
+						beginAtZero: true,
+						callback: function(value) {
+							if (Number.isInteger(value)) {
+								return value;
+							}
+						}
+					}
+				}
+			]
+		}
+	};
+};
+
 export const getMembersEventAttendanceOptions = () => {
 	return {
 		scales: {

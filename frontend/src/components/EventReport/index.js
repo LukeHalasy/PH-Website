@@ -7,7 +7,9 @@ import {
 	clearFlashMessages,
 	fetchEvent,
 	getClassData,
+	getClassOptions,
 	getMajorData,
+	getMajorOptions,
 	getMembersEventAttendance,
 	getMembersEventAttendanceOptions,
 	fetchEventsPriorToEvent
@@ -156,10 +158,7 @@ class ReportsPage extends Component {
 			}
 		}
 
-		return getMembersEventAttendance(
-			eventAttendance,
-			`Attendees Event Attendance in ${eventDate.getFullYear()} Before ${this.state.event.name}`
-		);
+		return getMembersEventAttendance(eventAttendance, `Attendees Event Attendance`);
 	};
 
 	render() {
@@ -174,25 +173,27 @@ class ReportsPage extends Component {
 				<div className="section">
 					<div className="section-container">
 						<Header message={event.name} />
-						<h3>{event.name} Report</h3>
-						<Link key={`${match.params.id}-1`} to={`/event/${match.params.id}`}>
-							<button type="button" className="pull-left btn btn-primary btn-sm">
-								<span className="glyphicon glyphicon-chevron-left" aria-hidden="true" />
-								Event
-							</button>
-						</Link>
+						<h3>
+							<Link key={`${match.params.id}-1`} to={`/event/${match.params.id}`}>
+								<button type="button" className="pull-left btn btn-primary btn-sm">
+									<span className="glyphicon glyphicon-chevron-left" aria-hidden="true" />
+									Event
+								</button>
+							</Link>
+							{event.name} Report
+						</h3>
 					</div>
 				</div>
 				<div className="section">
-					<div className="section-container">
+					<div className="section-container" style={{ paddingBottom: '30px' }}>
 						<Header message="Class Data" />
-						<Bar data={this.setupClassData()} />
+						<Bar data={this.setupClassData()} options={getClassOptions()} />
 					</div>
 				</div>
-				<div className="section">
+				<div className="section" style={{ paddingBottom: '30px' }}>
 					<div className="section-container">
 						<Header message="Major Data" />
-						<Bar data={this.setupMajorData()} />
+						<Bar data={this.setupMajorData()} options={getMajorOptions()} />
 					</div>
 				</div>
 				<div className="section">

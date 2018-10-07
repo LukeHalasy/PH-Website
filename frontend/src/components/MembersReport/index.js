@@ -8,13 +8,13 @@ import {
 	fetchMembersNumEvents,
 	fetchEvents,
 	getClassData,
+	getClassOptions,
 	getMajorData,
+	getMajorOptions,
 	getMembersEventAttendance,
 	getMembersEventAttendanceOptions
 } from '../../actions';
 import { Bar, Line } from 'react-chartjs-2';
-import '../Common/AboutSection.css';
-import '../Common/EventSection.css';
 
 class ReportsPage extends Component {
 	static propTypes = {
@@ -290,27 +290,31 @@ class ReportsPage extends Component {
 						<h3>Members Report</h3>
 					</div>
 				</div>
-				<div className="section events" style={{ textAlign: 'left' }}>
+				<div
+					className="section"
+					style={{ textAlign: 'left' }}
+					style={{ paddingBottom: '30px' }}
+				>
 					<div className="section-container">
-						<Bar data={this.setupClassData()} />
+						<Bar data={this.setupClassData()} options={getClassOptions()} />
 					</div>
 				</div>
-				<div className="section about">
+				<div className="section" style={{ paddingBottom: '30px' }}>
 					<div className="section-container">
-						<Bar data={this.setupMajorData()} />
+						<Bar data={this.setupMajorData()} options={getMajorOptions()} />
 					</div>
 				</div>
-				<div className="section about">
+				<div className="section" style={{ paddingBottom: '30px' }}>
 					<div className="section-container">
 						<Line data={this.getSpecificDateJoinedData()} />
 					</div>
 				</div>
-				<div className="section about">
+				<div className="section" style={{ paddingBottom: '30px' }}>
 					<div className="section-container">
 						<Line data={this.getCumulativeDateJoinedData()} />
 					</div>
 				</div>
-				<div className="section about">
+				<div className="section" style={{ paddingBottom: '30px' }}>
 					<div className="section-container">
 						<Bar
 							data={this.setupMembersEventAttendance()}
@@ -318,7 +322,7 @@ class ReportsPage extends Component {
 						/>
 					</div>
 				</div>
-				<div className="section about">
+				<div className="section">
 					<div className="section-container">
 						<Line data={this.getEventAttendance()} />
 					</div>
