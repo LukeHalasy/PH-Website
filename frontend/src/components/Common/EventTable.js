@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { formatDate } from '../../constants';
+var Infinite = require('react-infinite');
 
 class EventTable extends Component {
 	static propTypes = {
@@ -16,18 +17,15 @@ class EventTable extends Component {
 		return (
 			<div className="panel panel-default">
 				<table className="table table-bordered table-hover table-clickable panel-body sortableTable">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Location</th>
-							<th>Date</th>
-							{allowed && <th># Attended</th>}
-						</tr>
-					</thead>
 					<tbody>
 						{events &&
 							events.map(event => (
-								<tr key={event._id + 1} id={event._id} onClick={this.onClick(event._id)}>
+								<tr
+									key={event._id + 1}
+									className="60-px"
+									id={event._id}
+									onClick={this.onClick(event._id)}
+								>
 									<td>{event.name}</td>
 									{/* <td>{formatDate(event.createdAt)}</td> */}
 									<td>{event.location}</td>
